@@ -96,7 +96,6 @@ class TestCountryDemo(BasicCountryTestCase):
         country = Country.objects.create(name="India",latitude="45.1241341", longitude="47.1234",code="880")
         response = self.client.delete(self.country_url+f"{country.pk}/")
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        print(response.content)
 
 
 
@@ -182,7 +181,7 @@ class TestStateDemo(BasicStateTestCase):
         state = State.objects.create(country=self.country, name="Rajshahi")
         response = self.client.delete(self.state_url+f"{state.pk}/")
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        print(response.content)
+
 
 
 @pytest.mark.django_db
@@ -278,3 +277,42 @@ class BasicAddressTestCase(APITestCase):
             "road_number":2345245,
             "state":1
         })
+
+    def test_delete_data(self)->None:
+        address = Address.objects.create(state=self.state, name="Rajbari 123",house_number="2345",road_number="2345245")
+        response = self.client.delete(self.address_url+f"{address.pk}/")
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+
+
+
+@pytest.mark.django_db
+class TestAddressDetailAPI(APITestCase):
+    def setUp(self) -> None:
+        self.address_detail_url = reverse("addressdetail-list")
+        self.user = User.objects.create_user(email="test@gmail.com",first_name="test", last_name="last",password="newpass@123")
+        self.token = RefreshToken.for_user(self.user)
+        self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.token.access_token}")
+        country = Country.objects.create(name="Bangladesh",latitude="45.1241341", longitude="47.1234",code="880")
+        state = State.objects.create(country=country, name="Rajshahi")
+        self.address = Address.objects.create(state=state, name="Rajbari", house_number="3456365",road_number="245245")
+
+    def tearDown(self) -> None:
+        pass
+
+
+    def test_get_all_data(self)->None:
+        response = self.client.get(self.address_detail_url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_post_request(self)->None:
+        response = self.client.post(self.address_detail_url)
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def test_update_request(self)->None:
+        response = self.client.put(self.address_detail_url+f"{self.address.pk}/")
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def test_delete_request(self)->None:
+        response = self.client.delete(self.address_detail_url+f"{self.address.pk}/")
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)

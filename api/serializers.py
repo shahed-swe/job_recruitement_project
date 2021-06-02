@@ -34,10 +34,15 @@ class AddressSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class StateDetailSerializer(serializers.ModelSerializer):
+    country = CountrySerializer(many=False)
+
+    class Meta:
+        model = State
+        fields = '__all__'
 
 class AddressDetailSerializer(serializers.ModelSerializer):
-    stateof = StateSerializer(many=False, read_only=True)
-
+    state = StateDetailSerializer(many=False)
     class Meta:
         model = Address
         fields = '__all__'

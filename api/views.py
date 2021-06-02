@@ -32,5 +32,5 @@ class AddressView(viewsets.ModelViewSet):
 
 class AddressDetailView(viewsets.ModelViewSet):
     queryset = models.Address.objects.all()
-    serializer_class = serializers.AddressSerializer
+    serializer_class = serializers.AddressDetailSerializer
     http_method_names = ['get']
