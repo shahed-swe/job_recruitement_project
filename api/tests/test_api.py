@@ -216,4 +216,50 @@ class BasicAddressTestCase(APITestCase):
                 "state":1
             }
         ])
+    
+    def test_adding_address_using_api(self)->None:
+        data = {
+            "state": self.state.pk,
+            "name":"Rajbari 123",
+            "house_number":"23453",
+            "road_number":"452345"
+        }
+        response = self.client.post(self.address_url, data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(json.loads(response.content),{
+                "id":1,
+                "name":"Rajbari 123",
+                "house_number":"23453",
+                "road_number":452345,
+                "state":1
+            })
 
+    def test_address_by_missing_one_value(self)->None:
+        data = {
+            "state": self.state.pk,
+            "name":"Rajbari 123",
+            "house_number":"23453",
+            "road_number":""
+        }
+        response = self.client.post(self.address_url, data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+
+    def test_update_columns_to_update_all(self)->None:
+        address = Address.objects.create(state=self.state, name="Rajbari 123",house_number="2345",road_number="2345245")
+        data = {
+            "id":address.pk,
+            "state": self.state.pk,
+            "name":"Amar Ghor32",
+            "house_number":"234524",
+            "road_number":"345235"
+        }
+        response = self.client.put(self.address_url+f"{address.pk}/",data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(json.loads(response.content), {
+            "id":1,
+            "name":"Amar Ghor32",
+            "house_number":"234524",
+            "road_number":345235,
+            "state":1
+        })
