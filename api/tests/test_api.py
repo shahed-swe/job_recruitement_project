@@ -133,3 +133,27 @@ class TestStateDemo(BasicStateTestCase):
                 },
                 "name":"Rajshahi"
         }])
+
+    def test_adding_state_using_api(self)->None:
+        data = {
+            "country":{
+                "name":"India",
+                "latitude":45.5678576,
+                "longitude":67.234542,
+                "code":"91"
+            },
+            "name":"Kolkata"
+        }
+        response = self.client.post(self.state_url, data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(json.loads(response.content),{
+            "id":1,
+            "country":{
+                    "id":2,
+                    "name":"India",
+                    "latitude":45.5678576,
+                    "longitude":67.234542,
+                    "code":"91"
+                },
+                "name":"Kolkata"
+            })
