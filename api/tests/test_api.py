@@ -263,3 +263,18 @@ class BasicAddressTestCase(APITestCase):
             "road_number":345235,
             "state":1
         })
+
+    def test_update_columns_seperately(self)->None:
+        address = Address.objects.create(state=self.state, name="Rajbari 123",house_number="2345",road_number="2345245")
+        data = {
+            "house_number":"34563465"
+        }
+        response = self.client.patch(self.address_url+f"{address.pk}/",data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(json.loads(response.content), {
+            "id":1,
+            "name":"Rajbari 123",
+            "house_number":"34563465",
+            "road_number":2345245,
+            "state":1
+        })
