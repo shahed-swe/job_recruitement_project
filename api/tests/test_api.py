@@ -107,6 +107,7 @@ class BasicStateTestCase(APITestCase):
         self.user = User.objects.create_user(email="testmain@gmail.com", first_name="test", last_name="last",password="hello@123")
         self.token = RefreshToken.for_user(self.user)
         self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.token.access_token}")
+        self.country = Country.objects.create(name="Bangladesh",latitude="45.1241341", longitude="47.1234",code="880")
     
     def tearDown(self) -> None:
         pass
@@ -116,3 +117,19 @@ class TestStateDemo(BasicStateTestCase):
         response = self.client.get(self.state_url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(json.loads(response.content), [])
+
+    def test_one_state_exists(self)->None:
+        state = State.objects.create(country=self.country, name="Rajshahi")
+        response = self.client.get(self.state_url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(json.loads(response.content),[{
+            "id":1,
+            "country":{
+                    "id":1,
+                    "name":"Bangladesh",
+                    "latitude":45.1241341,
+                    "longitude":47.1234,
+                    "code":"880"
+                },
+                "name":"Rajshahi"
+        }])
