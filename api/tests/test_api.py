@@ -157,3 +157,15 @@ class TestStateDemo(BasicStateTestCase):
                 },
                 "name":"Kolkata"
             })
+    def test_state_by_missing_one_value(self)->None:
+        data = {
+            "country":{
+                "name":"India",
+                "latitude":45.5678576,
+                "longitude":67.234542,
+                "code":""
+            },
+            "name":"Kolkata"
+        }
+        response = self.client.post(self.state_url, data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
