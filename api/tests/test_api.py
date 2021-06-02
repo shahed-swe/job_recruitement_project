@@ -177,3 +177,43 @@ class TestStateDemo(BasicStateTestCase):
             "name":"Rajshahi",
             "country":2
         })
+    
+    def test_delete_data(self)->None:
+        state = State.objects.create(country=self.country, name="Rajshahi")
+        response = self.client.delete(self.state_url+f"{state.pk}/")
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        print(response.content)
+
+
+@pytest.mark.django_db
+class BasicAddressTestCase(APITestCase):
+    def setUp(self)->None:
+        self.address_url = reverse('addresses-list')
+        user = User.objects.create_user(email="testmain@gmail.com", first_name="test", last_name="last",password="hello@123")
+        token = RefreshToken.for_user(user)
+        self.client.credentials(HTTP_AUTHORIZATION=f"JWT {token.access_token}")
+        country = Country.objects.create(name="Bangladesh",latitude="45.1241341", longitude="47.1234",code="880")
+        self.state = State.objects.create(country=country, name="Rajshahi")
+
+    def tearDown(self) -> None:
+        pass
+
+    def test_zero_address_exists(self)->None:
+        response = self.client.get(self.address_url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(json.loads(response.content), [])
+
+    def test_one_address_exists(self)->None:
+        address = Address.objects.create(state=self.state, name="Rajbari", house_number="3456365",road_number="245245")
+        response = self.client.get(self.address_url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(json.loads(response.content),[
+            {
+                "id":1,
+                "name":"Rajbari",
+                "house_number":"3456365",
+                "road_number":245245,
+                "state":1
+            }
+        ])
+

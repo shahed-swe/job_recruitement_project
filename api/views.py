@@ -28,3 +28,9 @@ class AddressView(viewsets.ModelViewSet):
     serializer_class = serializers.AddressSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['house_number','road_number']
+
+
+class AddressDetailView(viewsets.ModelViewSet):
+    queryset = models.Address.objects.all()
+    serializer_class = serializers.AddressSerializer
+    http_method_names = ['get']

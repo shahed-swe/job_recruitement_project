@@ -35,4 +35,13 @@ class AddressSerializer(serializers.ModelSerializer):
 
 
 
+class AddressDetailSerializer(serializers.ModelSerializer):
+    stateof = StateSerializer(many=False, read_only=True)
+
+    class Meta:
+        model = Address
+        fields = '__all__'
+
+
+
 

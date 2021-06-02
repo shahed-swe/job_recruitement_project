@@ -8,6 +8,7 @@ router = routers.DefaultRouter()
 router.register(r'country', views.CountryView, basename="countries")
 router.register(r'state', views.StateView, basename="states")
 router.register(r'address', views.AddressView, basename="addresses")
+router.register(r'addressdetail', views.AddressDetailView, basename="addressdetail")
 
 
 urlpatterns = [
