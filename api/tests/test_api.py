@@ -108,6 +108,7 @@ class BasicStateTestCase(APITestCase):
         self.token = RefreshToken.for_user(self.user)
         self.client.credentials(HTTP_AUTHORIZATION=f"JWT {self.token.access_token}")
         self.country = Country.objects.create(name="Bangladesh",latitude="45.1241341", longitude="47.1234",code="880")
+        self.country2 = Country.objects.create(name="India",latitude="45.1241341", longitude="47.1234",code="880")
     
     def tearDown(self) -> None:
         pass
@@ -124,48 +125,55 @@ class TestStateDemo(BasicStateTestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(json.loads(response.content),[{
             "id":1,
-            "country":{
-                    "id":1,
-                    "name":"Bangladesh",
-                    "latitude":45.1241341,
-                    "longitude":47.1234,
-                    "code":"880"
-                },
-                "name":"Rajshahi"
+            "country":self.country.pk,
+            "name":"Rajshahi"
         }])
 
     def test_adding_state_using_api(self)->None:
         data = {
-            "country":{
-                "name":"India",
-                "latitude":45.5678576,
-                "longitude":67.234542,
-                "code":"91"
-            },
+            "country": self.country.pk,
             "name":"Kolkata"
         }
         response = self.client.post(self.state_url, data, format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(json.loads(response.content),{
-            "id":1,
-            "country":{
-                    "id":2,
-                    "name":"India",
-                    "latitude":45.5678576,
-                    "longitude":67.234542,
-                    "code":"91"
-                },
+                "id":1,
+                "country": self.country.pk,
                 "name":"Kolkata"
             })
+
     def test_state_by_missing_one_value(self)->None:
         data = {
-            "country":{
-                "name":"India",
-                "latitude":45.5678576,
-                "longitude":67.234542,
-                "code":""
-            },
-            "name":"Kolkata"
+            "country":self.country.pk,
+            "name":""
         }
         response = self.client.post(self.state_url, data, format="json")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_update_columns_to_update_all(self)->None:
+        state = State.objects.create(country=self.country, name="Rajshahi")
+        data = {
+            "id":state.pk,
+            "country": self.country.pk,
+            "name":"Delhi"
+        }
+        response = self.client.put(self.state_url+f"{state.pk}/",data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(json.loads(response.content), {
+            "id":1,
+            "name":"Delhi",
+            "country":1
+        })
+
+    def test_update_columns_seperately(self)->None:
+        state = State.objects.create(country=self.country, name="Rajshahi")
+        data = {
+            "country":self.country2.pk
+        }
+        response = self.client.patch(self.state_url+f"{state.pk}/",data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(json.loads(response.content), {
+            "id":1,
+            "name":"Rajshahi",
+            "country":2
+        })
