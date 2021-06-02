@@ -8,14 +8,6 @@ from rest_framework.test import APITestCase
 
 import pytest
 
-# @pytest.fixture
-# def test_user_login():
-#     user = User.objects.create_user(email="rafik8785@gmail.com", first_name="rafi", last_name="ahmad", password="nothingtosay")
-#     client = APIClient()
-#     refresh = RefreshToken.for_user(user)
-#     client.credentials(HTTP_AUTHORIZATION=f'JWT {refresh.access_token}')
-#     res = client.get(reverse('/auth/user/me/', kwargs={''}))
-#     return client
 
 
 class RegisterTestCase(APITestCase):

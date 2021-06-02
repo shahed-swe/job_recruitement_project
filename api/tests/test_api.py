@@ -1,13 +1,15 @@
+from _pytest.mark import param
 from django.contrib.auth.base_user import BaseUserManager
+from django.db import reset_queries
+from django.http import response
 import pytest
-from unittest import TestCase
 import json
 # from django.test import Client
 from rest_framework.test import APITestCase
 from django.urls import reverse
 from api.models import *
 from rest_framework_simplejwt.tokens import RefreshToken
-
+from rest_framework import status
 
 
 @pytest.mark.django_db
@@ -26,14 +28,14 @@ class TestDemo(BasicCountryTestCase):
 
     def test_zero_country_list(self)->None:
         response = self.client.get(self.country_url)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(json.loads(response.content), [])
 
     def test_one_country_exist(self)->None:
         country = Country.objects.create(name="Bangladesh",latitude="45.1241341", longitude="47.1234",code="880")
         response = self.client.get(self.country_url)
         response_content = json.loads(response.content)[0]
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_every_columns_needs_to_register(self)->None:
         body = {
@@ -43,4 +45,34 @@ class TestDemo(BasicCountryTestCase):
             "code":"880"
         }
         response = self.client.post(self.country_url, body)
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+
+    def test_every_columns_needs_to_register_two(self)->None:
+        body = {
+            "name":"India",
+            "latitude":"67.23454",
+            "longitude":"123.2345",
+            "code": ""
+        }
+        response = self.client.post(self.country_url, body)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_update_columns_to_update_all(self)->None:
+        country = Country.objects.create(name="Bangladesh",latitude="45.1241341", longitude="47.1234",code="880")
+        data = {
+            "name": "India",
+            "latitude":56.6768,
+            "longitude":78.3245,
+            "code":"91"
+        }
+        response = self.client.put(self.country_url+f"{country.pk}/", data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_update_individual_column(self)->None:
+        country = Country.objects.create(name="Bangladesh",latitude="45.1241341", longitude="47.1234",code="880")
+        data = {
+            "name":"Bangladesh",
+        }
+        response = self.client.patch(self.country_url+f"{country.pk}/", data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
