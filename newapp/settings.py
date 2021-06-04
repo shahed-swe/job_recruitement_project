@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'drf_yasg',
     'rest_framework',
     'rest_framework.authtoken',
     'api',
@@ -134,6 +135,9 @@ EMAIL_PORT = '587'
 EMAIL_HOST_USER = "your email"
 EMAIL_HOST_PASSWORD = "your app password"
 EMAIL_USE_TLS = True
+
+# swagger settings
+
 
 
 # djosar
