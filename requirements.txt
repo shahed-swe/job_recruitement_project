@@ -41,3 +41,4 @@ sqlparse==0.4.1
 toml==0.10.2
 uritemplate==3.0.1
 urllib3==1.26.5
+drf-yasg
