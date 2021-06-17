@@ -29,7 +29,7 @@ jobs:
 
     - name: Install dependencies
       run: pip install -r requirements.txt
-
+      
     # Optional: Add step to run tests here (PyTest, Django test suites, etc.)
 
     - name: Upload artifact for deployment jobs
@@ -59,4 +59,4 @@ jobs:
         with:
           app-name: 'movieapi2'
           slot-name: 'production'
-          publish-profile: ${{ secrets.AzureAppService_PublishProfile_b2f1eb54381b42c9a42f64228c130919 }}
+          publish-profile: ${{ secrets.AzureAppService_PublishProfile_11172bfa676943e7ab107862c46c1dc6 }}
